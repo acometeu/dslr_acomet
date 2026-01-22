@@ -14,9 +14,7 @@ def normalise_data(data):
         max = np.max(data[:, i])
         min = np.min(data[:, i])
         range = abs(max - min)
-        # put min data to 0
         data[:, i] -= min
-        # put all data between 0 and 100
         data[:, i] = data[:, i] * 100 / range
         i -= 1
     return (data)
