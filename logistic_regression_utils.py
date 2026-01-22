@@ -6,6 +6,7 @@ def compare_lr_results(true_results, test_results):
     good_results = accuracy[accuracy == True].size
     false_results = accuracy[accuracy == False].size
     print(f"Accuracy = {good_results * 100 / accuracy.size}%, (True : {good_results}, False : {false_results})")
+    return(false_results)
 
 
 def normalise_data(data):

@@ -10,7 +10,8 @@ def main():
     data_pd = pd.read_csv('dataset_train.csv')
     data_pd.drop(['Index', 'First Name', 'Last Name', 'Birthday', 'Best Hand'], axis=1, inplace=True)
     hogwarts_house_dict = {"Gryffindor": 0, "Slytherin": 1, "Hufflepuff": 2, "Ravenclaw": 3}
-    data_pd = data_parsing.replace_nan_value(data_pd, hogwarts_house_dict)
+    data_pd = data_parsing.pandas_remove_nan_line(data_pd)
+    # data_pd = data_parsing.replace_nan_value(data_pd, hogwarts_house_dict)
 
     # get results 
     results = data_pd['Hogwarts House']
@@ -31,8 +32,6 @@ def main():
         binomial_results = binomial_results.to_numpy(dtype=np.float64)
         thetas[i] = logistic_regression.gradient_descent(my_data, binomial_results)
 
-
-    # thetas = get 
 
     
 
