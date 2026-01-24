@@ -51,19 +51,26 @@ def gradient_descent(X, y, alpha=0.001, num_iter=1000, tol=0.01):
     return theta_save
 
 
-def predict_proba(X, theta):
-    X_b = np.c_[np.ones((X.shape[0], 1)), X]
-    return sigmoid(X_b @ theta)
+def logreg_train(X, y):
+    hogwarts_house_dict = {"Gryffindor": 0, "Slytherin": 1, "Hufflepuff": 2, "Ravenclaw": 3}
+    hogwarts_house_dict_inv = {v: k for k, v in hogwarts_house_dict.items()}
+    thetas = [x for x in range(len(hogwarts_house_dict_inv))]
+    for i in range(len(hogwarts_house_dict_inv)):
+        binomial_results = y.copy()
+        binomial_results[binomial_results != hogwarts_house_dict_inv[i]] = 0
+        binomial_results[binomial_results == hogwarts_house_dict_inv[i]] = 1
+        binomial_results = binomial_results.to_numpy(dtype=np.float64)
+        thetas[i] = gradient_descent(X, binomial_results)
 
-
-def predict(X, theta, treshold=0.5):
-    return (predict_proba(X, theta) >= treshold)
+    return(thetas)
 
 
 def main():
+    # import sys
+    # args = sys.argv
+    
     pass
 
 
 if (__name__ == "__main__"):
     main()
-
