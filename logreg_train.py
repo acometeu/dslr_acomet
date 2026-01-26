@@ -72,32 +72,36 @@ def logreg_train(data_csv, parsing_method=data_parsing.replace_nan_value_by_0, a
 
 
 def logreg_train_parse_args():
-    args_dic = {'data_csv=': "dataset_train.csv", 'parse_method=': 'replace_nan_value_by_0', 'alpha=': "0.001", 'iter=': "1000"}
+    args_dic = {'data_csv=': "dataset_train.csv", 'iter=': "1000", 'alpha=': "0.001", 'parse_method=': 'replace_nan_value_by_0'}
+
+    if (len(sys.argv) > 5):
+        print("Error to many argument, 5 maximum")
+        return
 
     i = 1
-    while(i < len(sys.argv)):
-        arg_found = False
-        for arg in args_dic.keys():
-            if (sys.argv[i].startswith(arg)):
-                part = sys.argv[i].partition(arg)
-                args_dic[arg] = part[2]
-                arg_found = True
-                break
-        if (not arg_found):
-            args_dic['data_csv='] = sys.argv[i]
+    while (i < len(sys.argv)):
+        print(list(args_dic.keys())[i - 1])
+        args_dic[list(args_dic.keys())[i - 1]] = sys.argv[i]
         i += 1
 
     # transform args in correct type
-    func_dic = {'replace_nan_value': data_parsing.replace_nan_value, 'pandas_remove_nan_line': data_parsing.pandas_remove_nan_line, 'replace_nan_value_by_0': data_parsing.replace_nan_value_by_0}
-    args_dic['parse_method='] = func_dic[args_dic['parse_method=']]
     args_dic['iter='] = int(args_dic['iter='])
     args_dic['alpha='] = float(args_dic['alpha='])
+    func_dic = {'replace_nan_value': data_parsing.replace_nan_value, 'pandas_remove_nan_line': data_parsing.pandas_remove_nan_line, 'replace_nan_value_by_0': data_parsing.replace_nan_value_by_0}
+    args_dic['parse_method='] = func_dic[args_dic['parse_method=']]
 
     return(args_dic)
 
 
 
 def main():
+    ''' Arguments are optionals :
+        arg 1 : data in csv file                    (default : 'dataset_train.csv')
+        arg 2 : number of iterations                (default : '1000')
+        arg 3 : alpha or step for gradient_descent  (default : '0.001')
+        arg 4 : parsing method used to filter data  (default : 'replace_nan_value_by_0')
+        others choices : ('pandas_remove_nan_line', 'replace_nan_value')
+    '''
 
     args = logreg_train_parse_args()
     logreg_train(args['data_csv='], args['parse_method='], args['alpha='], args['iter='])
