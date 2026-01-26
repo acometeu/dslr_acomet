@@ -40,17 +40,16 @@ def get_students_scores(data_csv, treat_nan_values=replace_nan_value_by_0):
     X = pd.read_csv(data_csv)
     X.drop(['Index', 'First Name', 'Last Name', 'Birthday', 'Best Hand'], axis=1, inplace=True)
     X = treat_nan_values(X)
-    # replace_nan_value_by_0(X)
-    # X = pandas_remove_nan_line(X)
-    # X = data_parsing.replace_nan_value(X, hogwarts_house_dict)
     X.drop('Hogwarts House', axis=1, inplace=True)
     X = X.to_numpy(dtype=np.float64)
     utils.normalise_data(X)
     return (X)
 
 
-def get_student_houses(data_csv):
+def get_student_houses(data_csv, treat_nan_values=replace_nan_value_by_0):
     y = pd.read_csv(data_csv)
+    if (treat_nan_values == pandas_remove_nan_line):
+        y = pandas_remove_nan_line(y)
     y = y['Hogwarts House']
     # y = y.to_numpy()
     return(y)

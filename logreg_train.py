@@ -1,4 +1,7 @@
 import numpy as np
+import pandas as pd
+import sys
+import data_parsing
 
 
 def cost_function(theta, X, y):
@@ -22,7 +25,7 @@ def calculate_gradient(theta, X, y):
     return (X.T @ (sigmoid(X @ theta) - y) / m) # derivative
 
 
-def gradient_descent(X, y, alpha=0.001, num_iter=1000, tol=0.01):
+def gradient_descent(X, y, alpha=0.001, iter=1000):
     X_b = np.c_[np.ones((X.shape[0], 1)), X]    # intercept (or bias)
     theta = np.zeros(X_b.shape[1])
 
@@ -31,7 +34,7 @@ def gradient_descent(X, y, alpha=0.001, num_iter=1000, tol=0.01):
     loop_save = 0
     theta_save = theta.copy()
 
-    for i in range(num_iter):
+    for i in range(iter):
         # print(f"loop = {i}")
         grad = calculate_gradient(theta, X_b, y)
         theta -= alpha * grad
@@ -51,25 +54,53 @@ def gradient_descent(X, y, alpha=0.001, num_iter=1000, tol=0.01):
     return theta_save
 
 
-def logreg_train(X, y):
-    hogwarts_house_dict = {"Gryffindor": 0, "Slytherin": 1, "Hufflepuff": 2, "Ravenclaw": 3}
-    hogwarts_house_dict_inv = {v: k for k, v in hogwarts_house_dict.items()}
-    thetas = [x for x in range(len(hogwarts_house_dict_inv))]
-    for i in range(len(hogwarts_house_dict_inv)):
-        binomial_results = y.copy()
-        binomial_results[binomial_results != hogwarts_house_dict_inv[i]] = 0
-        binomial_results[binomial_results == hogwarts_house_dict_inv[i]] = 1
-        binomial_results = binomial_results.to_numpy(dtype=np.float64)
-        thetas[i] = gradient_descent(X, binomial_results)
+def logreg_train(data_csv, parsing_method=data_parsing.replace_nan_value_by_0, alpha=0.001, iter=1000):
+    X = data_parsing.get_students_scores(data_csv, parsing_method)
+    y = data_parsing.get_student_houses(data_csv, parsing_method)
 
-    return(thetas)
+    hogwarts_house_dict = {0: "Gryffindor", 1: "Slytherin", 2: "Hufflepuff", 3: "Ravenclaw"}
+    thetas = pd.DataFrame()
+
+    for i in range(len(hogwarts_house_dict)):
+        binomial_results = y.copy()
+        binomial_results[binomial_results != hogwarts_house_dict[i]] = 0
+        binomial_results[binomial_results == hogwarts_house_dict[i]] = 1
+        binomial_results = binomial_results.to_numpy(dtype=np.float64)
+        thetas[hogwarts_house_dict[i]] = gradient_descent(X, binomial_results, alpha, iter)
+
+    thetas.to_csv('weights.csv', index=False)
+
+
+def logreg_train_parse_args():
+    args_dic = {'data_csv=': "dataset_train.csv", 'parse_method=': 'replace_nan_value_by_0', 'alpha=': "0.001", 'iter=': "1000"}
+
+    i = 1
+    while(i < len(sys.argv)):
+        arg_found = False
+        for arg in args_dic.keys():
+            if (sys.argv[i].startswith(arg)):
+                part = sys.argv[i].partition(arg)
+                args_dic[arg] = part[2]
+                arg_found = True
+                break
+        if (not arg_found):
+            args_dic['data_csv='] = sys.argv[i]
+        i += 1
+
+    # transform args in correct type
+    func_dic = {'replace_nan_value': data_parsing.replace_nan_value, 'pandas_remove_nan_line': data_parsing.pandas_remove_nan_line, 'replace_nan_value_by_0': data_parsing.replace_nan_value_by_0}
+    args_dic['parse_method='] = func_dic[args_dic['parse_method=']]
+    args_dic['iter='] = int(args_dic['iter='])
+    args_dic['alpha='] = float(args_dic['alpha='])
+
+    return(args_dic)
+
 
 
 def main():
-    # import sys
-    # args = sys.argv
-    
-    pass
+
+    args = logreg_train_parse_args()
+    logreg_train(args['data_csv='], args['parse_method='], args['alpha='], args['iter='])
 
 
 if (__name__ == "__main__"):
