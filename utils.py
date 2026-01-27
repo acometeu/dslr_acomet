@@ -14,6 +14,7 @@ def compare_lr_results(data_csv, houses_csv):
 
 
 def normalise_data(data):
+    '''proportional normalisation in poucentage (x/100)'''
     i = data.shape[1] - 1
     while i >= 0:
         max = np.max(data[:, i])

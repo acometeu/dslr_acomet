@@ -21,21 +21,19 @@ def sigmoid(z):
 
 
 def calculate_gradient(theta, X, y):
-    m = y.size
-    return (X.T @ (sigmoid(X @ theta) - y) / m) # derivative
+    return (X.T @ (sigmoid(X @ theta) - y) / y.size) # derivative
 
 
 def gradient_descent(X, y, alpha=0.001, iter=1000):
-    X_b = np.c_[np.ones((X.shape[0], 1)), X]    # intercept (or bias)
+    X_b = np.c_[np.ones(X.shape[0]), X]    # intercept (or bias)
     theta = np.zeros(X_b.shape[1])
 
-    #save best values
+    # save optimal values
     cost_save = np.finfo(np.float64).max
     loop_save = 0
     theta_save = theta.copy()
 
     for i in range(iter):
-        # print(f"loop = {i}")
         grad = calculate_gradient(theta, X_b, y)
         theta -= alpha * grad
 
@@ -80,7 +78,6 @@ def logreg_train_parse_args():
 
     i = 1
     while (i < len(sys.argv)):
-        print(list(args_dic.keys())[i - 1])
         args_dic[list(args_dic.keys())[i - 1]] = sys.argv[i]
         i += 1
 

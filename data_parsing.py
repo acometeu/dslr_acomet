@@ -51,7 +51,6 @@ def get_student_houses(data_csv, treat_nan_values=replace_nan_value_by_0):
     if (treat_nan_values == pandas_remove_nan_line):
         y = pandas_remove_nan_line(y)
     y = y['Hogwarts House']
-    # y = y.to_numpy()
     return(y)
 
 
